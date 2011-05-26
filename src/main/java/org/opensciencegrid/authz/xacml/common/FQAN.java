@@ -1,18 +1,9 @@
 package org.opensciencegrid.authz.xacml.common;
 
-/**
- * FQAN.java
- * User: tdh
- * Date: Oct 6, 2008
- * Time: 3:53:47 PM
- */
+
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-/**
- *
- * @author timur
- */
 public class FQAN implements java.io.Serializable {
 
     static final long serialVersionUID = -2212735007788920585L;
@@ -77,4 +68,3 @@ public class FQAN implements java.io.Serializable {
     }
 
 }
-

@@ -3,24 +3,22 @@ package org.opensciencegrid.authz.xacml.client;
 import org.opensaml.xacml.ctx.provider.ObligationProcessingContext;
 import org.opensaml.xacml.ctx.provider.ObligationProcessingException;
 import org.opensaml.xacml.ctx.provider.BaseObligationHandler;
-import org.opensaml.xacml.ctx.AttributeValueType;
 import org.opensaml.xacml.policy.ObligationType;
 import org.opensaml.xacml.policy.AttributeAssignmentType;
 import org.opensciencegrid.authz.xacml.common.LocalId;
 import org.opensciencegrid.authz.xacml.common.XACMLConstants;
 
 import java.util.List;
-import java.util.ListIterator;
 
 public class LocalIDObligationHandler {
 
-  LocalId id = new LocalId();
+    LocalId id = new LocalId();
 
     public enum ATTR_ID
     {
         ATTRIBUTE_USERNAME_ID, ATTRIBUTE_POSIX_UID_ID, ATTRIBUTE_POSIX_GID_ID, NOVALUE;
 
-        public static ATTR_ID toAttrID(String str)
+        public static ATTR_ID toAttrID(String str) throws ObligationProcessingException
         {
 
             /* Will throw an exception if attribute is not supported, causing NOVALUE to be returned */
@@ -31,14 +29,13 @@ public class LocalIDObligationHandler {
                 }
             }
             catch (Exception ex) {
+                String msg = "Attribute ID " + str + " unexpected.";
+                    throw new ObligationProcessingException(msg);
             }
 
             return NOVALUE;
         }
     }
-
-    //http://authz-interop.org/xacml/attribute/posix-uid, http://authz-interop.org/xacml/attribute/posix-gid;
-
 
     BaseObligationHandler subjecthandler = new BaseObligationHandler(XACMLConstants.OBLIGATION_USERNAME, 1) {
         public void evaluateObligation(ObligationProcessingContext context, ObligationType obligation)
@@ -81,9 +78,9 @@ public class LocalIDObligationHandler {
         }
     };
 
-  BaseObligationHandler seconarygidshandler = new BaseObligationHandler(XACMLConstants.OBLIGATION_SECONDARY_GIDS, 3) {
-    public void evaluateObligation(ObligationProcessingContext context, ObligationType obligation)
-            throws ObligationProcessingException {
+    BaseObligationHandler seconarygidshandler = new BaseObligationHandler(XACMLConstants.OBLIGATION_SECONDARY_GIDS, 3) {
+        public void evaluateObligation(ObligationProcessingContext context, ObligationType obligation)
+                throws ObligationProcessingException {
             List<AttributeAssignmentType> attrs = obligation.getAttributeAssignments();
             String[] gids = new String[attrs.size()];
             int i=0;
@@ -104,19 +101,19 @@ public class LocalIDObligationHandler {
         }
     };
 
-  public LocalId getLocalID() {
-    return id;
-  }
+    public LocalId getLocalID() {
+        return id;
+    }
 
-  public BaseObligationHandler getSubjectHandler() {
-    return subjecthandler;
-  }
+    public BaseObligationHandler getSubjectHandler() {
+        return subjecthandler;
+    }
 
-  public BaseObligationHandler getUIDGIDHandler() {
-    return uidgidhandler;
-  }
+    public BaseObligationHandler getUIDGIDHandler() {
+        return uidgidhandler;
+    }
 
-  public BaseObligationHandler getSecondaryGIDSHandler() {
-    return seconarygidshandler;
-  }
+    public BaseObligationHandler getSecondaryGIDSHandler() {
+        return seconarygidshandler;
+    }
 }
