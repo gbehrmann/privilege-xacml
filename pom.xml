@@ -5,7 +5,7 @@
 	<artifactId>privilege-xacml</artifactId>
 	<packaging>jar</packaging>
 	<name>privilege-xacml</name>
-	<version>2.5.0</version>
+	<version>2.6.0</version>
 	<url>http://maven.apache.org</url>
 
 	<repositories>
@@ -273,7 +273,25 @@
 		   <artifactId>glite-security-util-java</artifactId>
 		   <version>1.0.0dev</version>
 		   <scope>runtime</scope>
-	   </dependency>  -->      
+	   </dependency>  -->  
+        <dependency>
+            <groupId>voms</groupId>
+            <artifactId>vomsjapi</artifactId>
+            <version>2.0.0</version>
+            <scope>runtime</scope>
+	</dependency>	   
+        <dependency>
+            <groupId>emi</groupId>
+            <artifactId>emi-security-trustmanager</artifactId>
+            <version>3.0.3</version>
+            <scope>runtime</scope>
+	</dependency>
+        <dependency>
+            <groupId>emi</groupId>
+            <artifactId>emi-trustmanager-axis</artifactId>
+            <version>1.0.1</version>
+            <scope>runtime</scope>
+	</dependency>	       
         <dependency>
             <groupId>velocity</groupId>
             <artifactId>velocity</artifactId>
