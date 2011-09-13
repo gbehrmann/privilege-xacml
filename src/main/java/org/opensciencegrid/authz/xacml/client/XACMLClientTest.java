@@ -10,8 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.Init;
 import org.opensciencegrid.authz.xacml.stubs.Response;
 
-import org.glite.voms.PKIStore;
-
 import java.util.LinkedHashMap;
 
 public class XACMLClientTest
