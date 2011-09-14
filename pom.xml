@@ -15,7 +15,7 @@
 	   </repository>
 		<repository>
 		   <id>Privilege repository on cd-97177</id>
-		   <url>http://cd-97177.fnal.gov/maven/repository</url>
+		   <url>http://cd-97177.fnal.gov:8080/maven/repository</url>
 	   </repository>
 		<repository>
 		   <id>central</id>
