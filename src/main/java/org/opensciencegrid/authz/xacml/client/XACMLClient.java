@@ -94,6 +94,8 @@ public class XACMLClient {
     protected String VOMSSigningIssuer;
     protected String fqan;
     protected String CertificateSerialNumber; //todo make Integer
+    protected String CertificateChainNotBefore; // YYYY-MM-DDThh:mm:ss, any of 2002-05-30T09:00:00,
+    protected String CertificateChainNotAfter;  // 2002-05-30T09:30:10.5,2002-05-30T09:30:10Z,2002-05-30T09:30:10-06:00
     protected String CASerialNumber; //todo make Integer
     protected String VOMS_DNS_Port;
     protected String CertificatePoliciesOIDs;
@@ -389,7 +391,7 @@ public class XACMLClient {
             subjectAttribs.put(XACMLConstants.SUBJECT_X509_ID, X509Subject);
         }
         if(CondorCanonicalNameID!=null) {
-            subjectAttribs.put(XACMLConstants.SUBJECT_COMDOR_CANONICAL_NAME_ID, CondorCanonicalNameID);
+            subjectAttribs.put(XACMLConstants.SUBJECT_CONDOR_CANONICAL_NAME_ID, CondorCanonicalNameID);
         }
         if(X509SubjectIssuer!=null) {
             subjectAttribs.put(XACMLConstants.SUBJECT_X509_ISSUER, X509SubjectIssuer);
@@ -406,11 +408,14 @@ public class XACMLClient {
         if(fqan!=null) {
             subjectAttribs.put(XACMLConstants.SUBJECT_VOMS_PRIMARY_FQAN_ID, fqan);
         }
-        if(fqan!=null) {
-            subjectAttribs.put(XACMLConstants.SUBJECT_VOMS_FQAN_ID, fqan);
-        }
         if(CertificateSerialNumber!=null) {
             subjectAttribs.put(XACMLConstants.SUBJECT_CERTIFICATE_SERIAL_NUMBER_ID, CertificateSerialNumber);
+        }
+        if(CertificateChainNotBefore!=null) {
+            subjectAttribs.put(XACMLConstants.SUBJECT_CERTIFICATE_NOT_BEFORE_ID, CertificateChainNotBefore);
+        }
+        if(CertificateChainNotAfter!=null) {
+            subjectAttribs.put(XACMLConstants.SUBJECT_CERTIFICATE_NOT_AFTER_ID, CertificateChainNotAfter);
         }
         if(CASerialNumber!=null) {
             subjectAttribs.put(XACMLConstants.SUBJECT_CA_SERIAL_NUMBER_ID, CASerialNumber);
@@ -424,28 +429,67 @@ public class XACMLClient {
         if(CertificateChain!=null) {
             subjectAttribs.put(XACMLConstants.SUBJECT_CERT_CHAIN_ID, CertificateChain);
         }
+
         SubjectType subject = getSubjectType(subjectAttribs, issuer);
+        if(fqan!=null) {
+            addSubjectFQAN(fqan, subject, issuer);
+        }
+        return subject;
+    }
+
+    /**
+     * Add FQAN to the subject attributes, including subgroups
+     *
+     */
+    public static void addSubjectFQAN(String fqan, SubjectType subject, String issuer) {
+        if(fqan==null) return;
+
         List<AttributeType> subjAttrs = subject.getAttributes();
 
-        // Add the groups as voms-fqan's
-        Stack <String> groupStack = new Stack <String> ();
-        if(fqan!=null) {
-            String group = (new FQAN(fqan)).getGroup();
-            String subgroup = "";
-            StringTokenizer st = new StringTokenizer(group, "/");
-            while (st.hasMoreTokens()) {
-                subgroup = subgroup + "/" + st.nextToken();
-                groupStack.add(subgroup);
+        // Gather the values already written
+        Set<String> fqanVals = new LinkedHashSet<String>();
+        for (AttributeType attr : subjAttrs) {
+            if(attr.getAttributeID().equals(XACMLConstants.SUBJECT_VOMS_FQAN_ID)) {
+                for(AttributeValueType fqanVal : attr.getAttributeValues()) {
+                    fqanVals.add(fqanVal.getValue());
+                }
             }
         }
 
-        while (!groupStack.empty()) {
-            String subgroup = groupStack.pop();
-            AttributeType attributeType = getAttributeType(issuer, XACMLConstants.SUBJECT_VOMS_FQAN_ID, subgroup + "/Role=NULL/Capability=NULL");
+        // Work with normalized fqan
+        FQAN myFQAN = new FQAN(fqan);
+        String group = myFQAN.getGroup();
+        String role = myFQAN.getRole();
+        role = ("".equals(role)) ? "NULL" : role;
+        String capability = myFQAN.getCapability();
+        capability = ("".equals(capability)) ? "NULL" : capability;
+        String value = myFQAN.getGroup() + "/Role=" + role + "/Capability=" + capability;
+
+        // Add the FQAN if not already added
+        if(!fqanVals.contains(value)) {
+            AttributeType attributeType = getAttributeType(issuer, XACMLConstants.SUBJECT_VOMS_FQAN_ID, value);
             subjAttrs.add(attributeType);
+            fqanVals.add(value);
         }
 
-        return subject;
+        // Add the implied subgroups as voms-fqan's
+        Stack <String> groupStack = new Stack <String> ();
+        String subgroup = "";
+        StringTokenizer st = new StringTokenizer(group, "/");
+        while (st.hasMoreTokens()) {
+            subgroup = subgroup + "/" + st.nextToken();
+            groupStack.add(subgroup);
+        }
+
+        while (!groupStack.empty()) {
+            subgroup = groupStack.pop();
+            value = subgroup + "/Role=NULL/Capability=NULL";
+            if(!fqanVals.contains(value)) {
+                AttributeType attributeType = getAttributeType(issuer, XACMLConstants.SUBJECT_VOMS_FQAN_ID, value);
+                subjAttrs.add(attributeType);
+                fqanVals.add(value);
+            }
+        }
     }
 
     /**
@@ -990,6 +1034,22 @@ public class XACMLClient {
 
     public void setCertificateSerialNumber(String certificateSerialNumber) {
         CertificateSerialNumber = certificateSerialNumber;
+    }
+
+    public String getCertificateChainNotBefore() {
+        return CertificateChainNotBefore;
+    }
+
+    public void setCertificateChainNotBefore(String certificateChainNotBefore) {
+        CertificateChainNotBefore = certificateChainNotBefore;
+    }
+
+    public String getCertificateChainNotAfter() {
+        return CertificateChainNotAfter;
+    }
+
+    public void setCertificateChainNotAfter(String certificateChainNotAfter) {
+        CertificateChainNotAfter = certificateChainNotAfter;
     }
 
     public String getCASerialNumber() {

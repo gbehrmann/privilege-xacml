@@ -42,7 +42,7 @@ public class XACMLConstants {
     /**
      * X509 Certificate DN id
      */
-    public static final String SUBJECT_COMDOR_CANONICAL_NAME_ID =
+    public static final String SUBJECT_CONDOR_CANONICAL_NAME_ID =
             SUBJECT_BASE_NS + "subject-condor-canonical-name-id";
 
     /**
@@ -86,6 +86,18 @@ public class XACMLConstants {
      */
     public static final String SUBJECT_CERTIFICATE_SERIAL_NUMBER_ID =
             SUBJECT_BASE_NS + "certificate-serial-number";
+
+    /**
+     * Cert chain not-before
+     */
+    public static final String SUBJECT_CERTIFICATE_NOT_BEFORE_ID =
+            SUBJECT_BASE_NS + "validity-not-before";
+
+    /**
+     * Cert chain not-after
+     */
+    public static final String SUBJECT_CERTIFICATE_NOT_AFTER_ID =
+            SUBJECT_BASE_NS + "validity-not-after";
 
     /**
      * VOMS FQAN id
