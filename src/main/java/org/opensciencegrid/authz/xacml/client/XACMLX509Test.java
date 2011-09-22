@@ -22,7 +22,6 @@ public class XACMLX509Test {
 
     public static void main(String[] args) {
 
-        GSSContext context = null;
         GlobusCredential cred = null;
         try {
             cred = new GlobusCredential(getProxyFile());
@@ -46,12 +45,11 @@ public class XACMLX509Test {
         }
         logger.info("The subject name is " + X509Subject);
 
-        Collection<String> fqans = null;
+        Collection<String> fqans = new LinkedHashSet();
+        fqans.add(null);
         try {
-            fqans = X509CertUtil.getFQANsFromX509Chain(chain, false);
+            fqans.addAll(X509CertUtil.getFQANsFromX509Chain(chain, false));
         } catch (Exception e)  {
-            fqans = new LinkedHashSet();
-            fqans.add(null);
         }
 
         Iterator <String> fqans_itr = fqans.iterator();
@@ -232,13 +230,13 @@ public class XACMLX509Test {
     }
 
     public static String getResourceHostName() throws Exception {
-        String val = System.getenv("RESOURCE_DNS_HOST_NAME_ID");
+        String val = System.getenv("RESOURCE_DNS_HOST_NAME");
         if (val==null) throw new Exception();
         return val;
     }
 
     public static String getTargetServiceIssuer() throws Exception {
-        String val = System.getenv("RESOURCE_X509_ISSUER_ID");
+        String val = System.getenv("RESOURCE_X509_ISSUER");
         if (val==null) throw new Exception();
         return val;
     }
