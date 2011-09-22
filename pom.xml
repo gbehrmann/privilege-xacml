@@ -166,21 +166,21 @@
 		   <artifactId>opensaml</artifactId>
 		   <version>2.4.1</version>
 	   </dependency>
-	   <!--<dependency>
+	   <dependency>
 		   <groupId>globus</groupId>
 		   <artifactId>cog-jglobus</artifactId>
-		   <version>1.4</version>
-	   </dependency>-->
+		   <version>1.8.0</version>
+	   </dependency>
 	   <!--<dependency>
 		   <groupId>globus</groupId>
 		   <artifactId>cog-axis</artifactId>
 		   <version>1.2</version>
 	   </dependency>-->
-	   <dependency>
+	   <!--<dependency>
 		   <groupId>joda-time</groupId>
 		   <artifactId>joda-time</artifactId>
 		   <version>1.6</version>
-	   </dependency>	    	   	   		   
+	   </dependency>-->	    	   	   		   
 	   <dependency>
 		   <groupId>opensaml</groupId>
 		   <artifactId>xmltooling</artifactId>
@@ -250,12 +250,12 @@
 	   </dependency>   	   	   	   	  
 	   	   	   	  
 		<!--runtime scope--> 
-        <!--<dependency>
-            <groupId>glite</groupId>
-            <artifactId>bcprov</artifactId>
-            <version>jdk15-139</version>
-            <scope>runtime</scope>
-        </dependency>-->    
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15</artifactId>
+            <version>1.45</version>
+            <scope>provided</scope>
+        </dependency>  
 	<!--	<dependency>
 		   <groupId>glite</groupId>
 		   <artifactId>glite-security-trustmanager</artifactId>
@@ -278,13 +278,13 @@
             <groupId>voms</groupId>
             <artifactId>vomsjapi</artifactId>
             <version>2.0.0</version>
-            <scope>runtime</scope>
+            <scope>provided</scope>
 	</dependency>	   
         <dependency>
             <groupId>emi</groupId>
             <artifactId>emi-security-trustmanager</artifactId>
             <version>3.0.3</version>
-            <scope>runtime</scope>
+            <scope>provided</scope>
 	</dependency>
         <dependency>
             <groupId>emi</groupId>
