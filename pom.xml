@@ -62,6 +62,7 @@
 					<serverSide>true</serverSide>
 					<subPackageByFileName>true</subPackageByFileName>
 					<allElements>true</allElements>
+					<skeletonDeploy>true</skeletonDeploy>
 					<verbose>true</verbose>
 					<mappings>
 						<mapping>
