@@ -10,80 +10,121 @@
 
 	<repositories>
 		<repository>
-		   <id>Internet2 repository</id>
-		   <url>http://shibboleth.internet2.edu/downloads/maven2/org</url>
-	   </repository>
+			<id>central</id>
+			<name>Maven Repository Switchboard</name>
+			<layout>default</layout>
+			<url>http://repo1.maven.org/maven2</url>
+		</repository>
 		<repository>
-		   <id>Privilege repository on cd-97177</id>
-		   <url>http://www.fnal.gov/docs/products/voprivilege/maven/repository</url>
-	   </repository>
-		<repository>
-		   <id>central</id>
-		   <name>Maven Repository Switchboard</name>
-		   <layout>default</layout>
-		   <url>http://repo1.maven.org/maven2</url>
-	   </repository>
+			<id>shib-release</id>
+			<url>https://build.shibboleth.net/nexus/content/groups/public</url>
+		</repository>
 	</repositories>
-
 	<pluginRepositories>
 		<pluginRepository>
 		<id>codehaus snapshot repository</id>
-		      <url>http://snapshots.repository.codehaus.org/</url>
-		      <releases>
-					<enabled>true</enabled>
-		      </releases>
+			<url>http://snapshots.repository.codehaus.org/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
 		</pluginRepository>
 		<pluginRepository>
 			<id>Mojo Snapshots</id>
 			<url>http://snapshots.repository.codehaus.org/</url>
 			<snapshots>
-			      <enabled>true</enabled>
+				<enabled>true</enabled>
 			</snapshots>
 			<releases>
-			      <enabled>false</enabled>
+				<enabled>false</enabled>
 			</releases>
 		</pluginRepository>
 	</pluginRepositories>
 
 	<build>
-  		<resources>
-	      <resource>
-	        <directory>src/main/resources</directory>
-	        <includes>
-	          <include>*.xml</include>
-		  <include>*.wsdd</include>
-	        </includes>
-	      </resource>
-	    </resources>	
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>*.xml</include>
+					<include>*.wsdd</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
-			<!--plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>axistools-maven-plugin</artifactId>
+				<version>1.4</version>
+				<configuration>
+					<deployScope>Application</deployScope>
+					<useEmitter>true</useEmitter>
+					<testCases>false</testCases>
+					<serverSide>true</serverSide>
+					<subPackageByFileName>true</subPackageByFileName>
+					<allElements>true</allElements>
+					<verbose>true</verbose>
+					<mappings>
+						<mapping>
+							<namespace>http://www.globus.org/security/XACMLAuthorization/bindings</namespace>
+							<targetPackage>org.opensciencegrid.authz.xacml.stubs</targetPackage>
+						</mapping>
+						<mapping>
+							<namespace>http://www.globus.org/security/XACMLAuthorization</namespace>
+							<targetPackage>org.opensciencegrid.authz.xacml.stubs</targetPackage>
+						</mapping>
+						<mapping>
+							<namespace>urn:oasis:names:tc:SAML:2.0:protocol</namespace>
+							<targetPackage>org.opensciencegrid.authz.xacml.stubs</targetPackage>
+						</mapping>
+						<mapping>
+							<namespace>urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:protocol</namespace>
+							<targetPackage>org.opensciencegrid.authz.xacml.stubs</targetPackage>
+						</mapping>
+						<mapping>
+							<namespace>http://www.globus.org/security/XACMLAuthorization/service</namespace>
+							<targetPackage>org.opensciencegrid.authz.xacml.stubs</targetPackage>
+						</mapping>
+					</mappings>
+					<wsdlFiles>
+						<wsdlFiles>xacml_authz_service.wsdl</wsdlFiles>
+					</wsdlFiles>
+				</configuration>
 				<executions>
 					<execution>
-						<id>1</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<tasks>
-								<mkdir dir="target/temp"/>
-								<copy filtering="on" todir="target/temp">
-									<fileset includes="*.jar" dir="${user.home}/.m2/repository/axis/axis-ant/1.4"/>
-									<fileset includes="*.jar" dir="${user.home}/.m2/repository/axis/axis/1.4"/>
-									<fileset includes="*.jar" dir="${user.home}/.m2/repository/axis/axis-saaj/1.4"/>
-									<fileset includes="*.jar" dir="${user.home}/.m2/repository/axis/axis-jaxrpc/1.4"/>
-									<fileset includes="*.jar" dir="${user.home}/.m2/repository/axis/axis-wsdl4j/1.4"/>
-									<fileset includes="*.jar" dir="${user.home}/.m2/repository/commons-discovery/commons-discovery/0.2"/>
-									<fileset includes="*.jar" dir="${user.home}/.m2/repository/commons-logging/commons-logging/1.0.3"/>
-								</copy>
-								<ant antfile="wsdl2java.xml" target="createClientStub" inheritRefs="true"/>
-								<delete dir="target/temp"/>
-							</tasks>
-						</configuration>
 						<goals>
-							<goal>run</goal>
+							<goal>wsdl2java</goal>
 						</goals>
 					</execution>
 				</executions>
-			</plugin-->
+				<dependencies>
+					<dependency>
+						<groupId>javax.mail</groupId>
+						<artifactId>mail</artifactId>
+						<version>1.4.1</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+						<groupId>axis</groupId>
+						<artifactId>axis</artifactId>
+						<version>1.4</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.axis</groupId>
+						<artifactId>axis-jaxrpc</artifactId>
+						<version>1.4</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.axis</groupId>
+						<artifactId>axis-saaj</artifactId>
+						<version>1.4</version>
+					</dependency>
+					<dependency>
+						<groupId>axis</groupId>
+						<artifactId>axis-wsdl4j</artifactId>
+						<version>1.5.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -91,12 +132,12 @@
 					<source>1.6</source>
 					<target>1.6</target>
 					<debug>false</debug>
-					<showDeprecation>true</showDeprecation>
+					<showDeprecation>false</showDeprecation>
 					<showWarnings>true</showWarnings>
 					<optimize>false</optimize>
 					<verbose>false</verbose>
 				</configuration>
-			</plugin>				
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -116,213 +157,169 @@
 	
 	<dependencies>
 		<!--compile scope-->
-	   <dependency>
-		   <groupId>log4j</groupId>
-		   <artifactId>log4j</artifactId>
-		   <version>1.2.16</version>
-	   </dependency>
-		<!--<dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+		</dependency>
+		<dependency>
 			<groupId>axis</groupId>
 			<artifactId>axis-ant</artifactId>
 			<version>1.4</version>
-		</dependency>-->		
+		</dependency>
 		<dependency>
 			<groupId>axis</groupId>
 			<artifactId>axis</artifactId>
 			<version>1.4</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.axis</groupId>
+			<groupId>axis</groupId>
 			<artifactId>axis-jaxrpc</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<!--<dependency>
+		<dependency>
 			<groupId>axis</groupId>
 			<artifactId>axis-saaj</artifactId>
 			<version>1.4</version>
-		</dependency>-->
-       <dependency>
-		   <groupId>axis</groupId>
-		   <artifactId>axis-wsdl4j</artifactId>
-		   <version>1.5.1</version>
-	   </dependency>			
-	   <dependency>
-		   <groupId>commons-codec</groupId>
-		   <artifactId>commons-codec</artifactId>
-		   <version>1.5</version>
-	   </dependency>			
-	   <dependency>
-		   <groupId>commons-discovery</groupId>
-		   <artifactId>commons-discovery</artifactId>
-		   <version>0.5</version>
-	   </dependency>		
-	   <dependency>
-		   <groupId>commons-lang</groupId>
-		   <artifactId>commons-lang</artifactId>
-		   <version>2.6</version>
-	   </dependency>			
-	   <dependency>
-		   <groupId>opensaml</groupId>
-		   <artifactId>opensaml</artifactId>
-		   <version>2.4.1</version>
-	   </dependency>
-	   <dependency>
-		   <groupId>globus</groupId>
-		   <artifactId>cog-jglobus</artifactId>
-		   <version>1.8.0</version>
-	   </dependency>
-	   <!--<dependency>
-		   <groupId>globus</groupId>
-		   <artifactId>cog-axis</artifactId>
-		   <version>1.2</version>
-	   </dependency>-->
-	   <dependency>
-		   <groupId>joda-time</groupId>
-		   <artifactId>joda-time</artifactId>
-		   <version>1.6</version>
-	   </dependency>	    	   	   		   
-	   <dependency>
-		   <groupId>opensaml</groupId>
-		   <artifactId>xmltooling</artifactId>
-		   <version>1.3.1</version>
-	   </dependency>	
-	   <dependency>  
-			<groupId>org.slf4j</groupId>  
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.1</version>
-		</dependency>	
-	   <dependency>  
-			<groupId>org.slf4j</groupId>  
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.6.1</version>
-		</dependency>		
- 	   <dependency>
-		   <groupId>xml-security</groupId>
-		   <artifactId>xml-security</artifactId>
-		   <version>1.4.1</version>
-	   </dependency>	   	   	   		  
-	   	   	   	  
-		<!--provided scope--> 
-		<!--<dependency>
-	    	<groupId>axis</groupId>
-	     	<artifactId>axis-ant</artifactId>
-	     	<version>1.3</version>
-		   <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>axis</groupId>
 			<artifactId>axis-wsdl4j</artifactId>
-			<version>1.3</version>
-		   <scope>provided</scope>
-		</dependency>-->			
-	   <!--<dependency>
-		   <groupId>gplazma.gplazmalite</groupId>
-		   <artifactId>gplazma</artifactId>
-		   <version>1.0-SNAPSHOT</version>
-		   <scope>provided</scope>
-	   </dependency>  -->
-	   <dependency>
-		   <groupId>sun</groupId>
-		   <artifactId>sunxacml</artifactId>
-		   <version>1.2</version>
-		   <scope>provided</scope>
-	   </dependency>	   
-	   <!--<dependency>
-		   <groupId>wsrf</groupId>
-		   <artifactId>wsrf_core</artifactId>
-		   <version>4.0</version>
-		   <scope>provided</scope>
-	   </dependency>-->	 
-	
-	   <dependency>
-		   <groupId>commons-logging</groupId>
-		   <artifactId>commons-logging-api</artifactId>
-		   <version>1.1</version>
-		   <scope>provided</scope>
-	   </dependency>
-	   	   	   	  
-        <!--test scope-->
-	   <dependency>
-		   <groupId>junit</groupId>
-		   <artifactId>junit</artifactId>
-		   <version>4.8.2</version>
-		   <scope>test</scope>
-	   </dependency>   	   	   	   	  
-	   	   	   	  
-		<!--runtime scope--> 
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15</artifactId>
-            <version>1.45</version>
-            <scope>provided</scope>
-        </dependency>  
-	<!--	<dependency>
-		   <groupId>glite</groupId>
-		   <artifactId>glite-security-trustmanager</artifactId>
-		   <version>1.6.3dev</version>
-		   <scope>runtime</scope>
-	   </dependency>
-	   <dependency>
-		   <groupId>glite</groupId>
-		   <artifactId>voms-api</artifactId>
-		   <version>1.0</version>
-		   <scope>runtime</scope>
-	   </dependency>
-	   <dependency>
-		   <groupId>glite</groupId>
-		   <artifactId>glite-security-util-java</artifactId>
-		   <version>1.0.0dev</version>
-		   <scope>runtime</scope>
-	   </dependency>  -->  
-        <dependency>
-            <groupId>voms</groupId>
-            <artifactId>vomsjapi</artifactId>
-            <version>2.0.0</version>
-            <scope>provided</scope>
-	</dependency>	   
-        <dependency>
-            <groupId>emi</groupId>
-            <artifactId>emi-security-trustmanager</artifactId>
-            <version>3.0.3</version>
-            <scope>provided</scope>
-	</dependency>
-        <dependency>
-            <groupId>emi</groupId>
-            <artifactId>emi-trustmanager-axis</artifactId>
-            <version>1.0.1</version>
-            <scope>runtime</scope>
-	</dependency>	       
-        <dependency>
-            <groupId>velocity</groupId>
-            <artifactId>velocity</artifactId>
-            <version>1.5</version>
-            <scope>runtime</scope>
-        </dependency>   
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.9.1</version>
-            <scope>runtime</scope>
-        </dependency>        
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xmlParserAPIs</artifactId>
-            <version>2.6.2</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-            <version>2.7.1</version>
-            <scope>runtime</scope>
-        </dependency>        
+			<version>1.5.1</version>
+		</dependency>
 		<dependency>
-    		<groupId>wsdl4j</groupId>
-    		<artifactId>wsdl4j</artifactId>
-    		<version>1.6.2</version>
-    		<scope>runtime</scope>
-		</dependency> 	           
-        
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-discovery</groupId>
+			<artifactId>commons-discovery</artifactId>
+			<version>0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.opensaml</groupId>
+			<artifactId>opensaml</artifactId>
+			<version>2.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jglobus</groupId>
+			<artifactId>ssl-proxies</artifactId>
+			<version>2.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jglobus</groupId>
+			<artifactId>gss</artifactId>
+			<version>2.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.opensaml</groupId>
+			<artifactId>xmltooling</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.5.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.5.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.santuario</groupId>
+			<artifactId>xmlsec</artifactId>
+			<version>1.4.1</version>
+		</dependency>
+		<!--provided scope--> 
+		<dependency>
+			<groupId>org.codehaus.fabric3.fabric3-db-exist</groupId>
+			<artifactId>sunxacml</artifactId>
+			<version>[1.0,)</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging-api</artifactId>
+			<version>1.0.4</version>
+			<scope>provided</scope>
+		</dependency>
+
+<!--test scope-->
+	<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!--runtime scope--> 
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15</artifactId>
+			<version>1.46</version>
+			<scope>provided</scope>
+		</dependency>  
+		<dependency>
+			<groupId>voms</groupId>
+			<artifactId>vomsjapi</artifactId>
+			<version>2.0.0</version>
+			<scope>provided</scope>
+		</dependency>	   
+		<dependency>
+			<groupId>emi</groupId>
+			<artifactId>emi-security-trustmanager</artifactId>
+			<version>3.0.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>emi</groupId>
+			<artifactId>emi-trustmanager-axis</artifactId>
+			<version>1.0.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>1.5</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.9.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xmlParserAPIs</artifactId>
+			<version>2.6.2</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<version>2.7.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+			<version>1.6.2</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 </project>
 
