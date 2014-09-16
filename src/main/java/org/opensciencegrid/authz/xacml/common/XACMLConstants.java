@@ -356,21 +356,4 @@ public class XACMLConstants {
         AttrIDHash.put( "access-permissions" , "ATTRIBUTE_ACCESS_PERMISSIONS_ID" ) ;
     }
 
-    /**
-     * Id of the primary group name attribute
-     */
-    public static final String ATTRIBUTE_PRIMARY_GROUPNAME_ID =
-            ATTRIBUTE_BASE_NS + "primary-groupname";
-    static {
-        AttrIDHash.put( "primary-groupname", "ATTRIBUTE_PRIMARY_GROUPNAME_ID" ) ;
-    }
-
-    /**
-     * Id of the secondary group names attribute
-     */
-    public static final String ATTRIBUTE_SECONDARY_GROUPNAMES_ID =
-            ATTRIBUTE_BASE_NS + "secondary-groupnames";
-    static {
-        AttrIDHash.put( "secondary-groupnames", "ATTRIBUTE_SECONDARY_GROUPNAMES_ID" ) ;
-    }
 }
