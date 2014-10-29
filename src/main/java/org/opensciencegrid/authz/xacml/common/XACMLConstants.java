@@ -240,6 +240,12 @@ public class XACMLConstants {
             OBLIGATION_BASE_NS + "username";
 
     /**
+     * Id of obligation account
+     */
+    public static final String OBLIGATION_ACCOUNT =
+            OBLIGATION_BASE_NS + "account";
+
+    /**
      * Id of obligation afs token
      */
     public static final String OBLIGATION_AFS_TOKEN =
@@ -309,6 +315,24 @@ public class XACMLConstants {
             ATTRIBUTE_BASE_NS + "username";
     static {
         AttrIDHash.put( "username" , "ATTRIBUTE_USERNAME_ID" ) ;
+    }
+
+    /**
+     * Id of attribute primary-groupname
+     */
+    public static final String ATTRIBUTE_PRIMARY_GROUPNAME_ID =
+            ATTRIBUTE_BASE_NS + "primary-groupname";
+    static {
+        AttrIDHash.put( "primary-groupname", "ATTRIBUTE_PRIMARY_GROUPNAME_ID" ) ;
+    }
+
+    /**
+     * Id of attribute secondary-groupname
+     */
+    public static final String ATTRIBUTE_SECONDARY_GROUPNAME_ID =
+            ATTRIBUTE_BASE_NS + "secondary-groupname";
+    static {
+        AttrIDHash.put( "secondary-groupname", "ATTRIBUTE_SECONDARY_GROUPNAME_ID" ) ;
     }
 
     /**
