@@ -14,5 +14,5 @@ import org.opensaml.xacml.profile.saml.XACMLAuthzDecisionStatementType;
  * @author Jay Packard 
  */
 public interface XACMLMappingService {
-	public XACMLAuthzDecisionStatementType mapCredentials(XACMLAuthzDecisionQueryType xacmlQuery) throws Exception;
+    public XACMLAuthzDecisionStatementType mapCredentials(XACMLAuthzDecisionQueryType xacmlQuery) throws Exception;
 }

@@ -1,9 +1,3 @@
-/*
- * LocalId.java
- *
- * Created on January 5, 2005, 5:32 PM
- */
-
 package org.opensciencegrid.authz.xacml.common;
 
 /** Represents a local user identity, as estabilished by the GRID Identity
@@ -16,7 +10,7 @@ public class LocalId {
     private String userName;
     private String groupName;
     private String[] supplementalGroupNames;
-    // the following are storage specific and should really be in another class
+
     private String fsRootPath;
     private String rootPath;
     private String relHomePath;
@@ -31,21 +25,19 @@ public class LocalId {
 
     /* this constructor does not initialize all fields */
     public LocalId(String userName, String groupName, String[] supplementalGroupNames,
-                              String rootPath, String relHomePath) {
+                   String rootPath, String relHomePath) {
 
-      this.userName = userName;
-      this.groupName = groupName;
-      if(supplementalGroupNames != null) {
-        this.supplementalGroupNames = new String[supplementalGroupNames.length];
-        for(int i=0; i < supplementalGroupNames.length; i++)
-           this.supplementalGroupNames[i] = supplementalGroupNames[i];
-      }
-      this.rootPath = rootPath;
-      this.relHomePath = relHomePath;
+        this.userName = userName;
+        this.groupName = groupName;
+        if(supplementalGroupNames != null) {
+            this.supplementalGroupNames = new String[supplementalGroupNames.length];
+            for(int i=0; i < supplementalGroupNames.length; i++)
+                this.supplementalGroupNames[i] = supplementalGroupNames[i];
+        }
+        this.rootPath = rootPath;
+        this.relHomePath = relHomePath;
 
     }
-
-
 
 
     /**
@@ -90,7 +82,7 @@ public class LocalId {
      * The primary group for the local identity.
      * @return a UNIX group name (i.e. "atlas").
      */
-     public String getGroupName() {
+    public String getGroupName() {
         return this.groupName;
     }
 
@@ -100,9 +92,9 @@ public class LocalId {
      * @param g a UNIX group name (i.e. "atlas").
      */
 
-     public void setGroupName(String g) {
-       this.groupName = g;
-     }
+    public void setGroupName(String g) {
+        this.groupName = g;
+    }
 
     /**
      * The group ID for the local identity.
@@ -146,7 +138,7 @@ public class LocalId {
 
     /**
 
-    /**
+     /**
      * Getter for property supplementalGroups.
      * @return Value of property supplementalGroups.
      */
@@ -162,7 +154,7 @@ public class LocalId {
     public void setSupplementalGroupNames(String[] sg) {
         this.supplementalGroupNames = new String[sg.length];
         for(int i=0; i < sg.length; i++)
-           this.supplementalGroupNames[i] = sg[i];
+            this.supplementalGroupNames[i] = sg[i];
     }
 
 
