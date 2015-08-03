@@ -114,7 +114,7 @@ public class BasicMappingXACMLAuthZService extends XACMLAuthorizationPortTypeSOA
         try {
             xacmlAuthz = mapService.mapCredentials(queryRequest);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("Mapping service failed to map credentials", e);
 
             // Build StatusMessageType
             StatusMessageTypeImplBuilder statusMessageBuilder = (StatusMessageTypeImplBuilder)Configuration.getBuilderFactory().getBuilder(StatusMessageType.DEFAULT_ELEMENT_NAME);
