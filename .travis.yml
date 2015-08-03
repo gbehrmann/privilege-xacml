@@ -8,6 +8,9 @@ before_install:
   - mvn install:install-file -B -DgroupId=org.italiangrid -DartifactId=voms-api-java -Dversion=2.0.8 -Dpackaging=jar -Dfile=voms-api-java.jar
   - curl http://t2.unl.edu/store/sources/trustmanager.jar > trustmanager.jar
   - mvn install:install-file -B -DgroupId=emi -DartifactId=emi-trustmanager -Dversion=3.0.3 -Dpackaging=jar -Dfile=trustmanager.jar
+  - curl http://t2.unl.edu/store/sources/trustmanager-axis.jar > trustmanager-axis.jar
+  - mvn install:install-file -B -DgroupId=emi -DartifactId=emi-trustmanager-axis -Dversion=1.0.1 -Dpackaging=jar -Dfile=trustmanager-axis.jar
+
 
 install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
