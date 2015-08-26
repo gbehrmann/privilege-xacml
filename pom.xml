@@ -15,31 +15,7 @@
 			<layout>default</layout>
 			<url>http://repo1.maven.org/maven2</url>
 		</repository>
-		<repository>
-			<id>shib-release</id>
-			<url>https://build.shibboleth.net/nexus/content/groups/public</url>
-		</repository>
 	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-		<id>codehaus snapshot repository</id>
-			<url>http://snapshots.repository.codehaus.org/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-		<pluginRepository>
-			<id>Mojo Snapshots</id>
-			<url>http://snapshots.repository.codehaus.org/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
-
 	<build>
 		<resources>
 			<resource>
@@ -126,7 +102,7 @@
 					</dependency>
 					<dependency>
 					        <groupId>commons-logging</groupId>
-					        <artifactId>commons-logging-api</artifactId>
+					        <artifactId>commons-logging</artifactId>
 					        <version>1.0.4</version>
 					</dependency>
 					<dependency>
@@ -263,7 +239,7 @@
 
 		<dependency>
 			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging-api</artifactId>
+			<artifactId>commons-logging</artifactId>
 			<version>1.0.4</version>
 			<scope>provided</scope>
 		</dependency>
