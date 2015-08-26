@@ -231,13 +231,6 @@
 		</dependency>
 		<!--provided scope--> 
 		<dependency>
-			<groupId>org.codehaus.fabric3.fabric3-db-exist</groupId>
-			<artifactId>sunxacml</artifactId>
-			<version>[1.0,)</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.0.4</version>

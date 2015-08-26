@@ -24,8 +24,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import com.sun.xacml.ctx.Status;
-
 public class MapCredentialsClient extends XACMLClient {
 
     public LocalId mapCredentials(String authzServiceUrlStr) throws Exception {
@@ -41,7 +39,7 @@ public class MapCredentialsClient extends XACMLClient {
         ResultType result = statement.getResponse().getResult();
         if (result.getDecision().getDecision() == DecisionType.DECISION.Indeterminate) {
             StatusType status = result.getStatus();
-            if (status !=null && status.getStatusCode().getValue().equals(Status.STATUS_PROCESSING_ERROR)) {
+            if (status !=null && status.getStatusCode().getValue().equals(org.opensaml.xacml.ctx.StatusCodeType.SC_PROCESSING_ERROR)) {
                 String msg = status.getStatusMessage().getValue();
                 throw new Exception("XACML server error: " + msg);
             }
