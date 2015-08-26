@@ -61,7 +61,6 @@ import org.apache.axis.types.Id;
 import org.apache.axis.types.NCName;
 import org.apache.axis.message.PrefixedQName;
 import org.apache.axis.utils.XMLUtils;
-import com.sun.xacml.ctx.Status;
 import javax.xml.namespace.QName;
 import javax.xml.soap.Name;
 
@@ -729,7 +728,7 @@ public class XACMLClient {
         XACMLAuthzDecisionStatementType indeterminate = getIndeterminateDecision();
 
         setXACMLStatementResponse(indeterminate, xacmlAuthzQueryType);
-        setXACMLStatementStatus(indeterminate, Status.STATUS_PROCESSING_ERROR, e.getMessage());
+        setXACMLStatementStatus(indeterminate, org.opensaml.xacml.ctx.StatusCodeType.SC_PROCESSING_ERROR, e.getMessage());
         try {
             response = convertToAuthz(indeterminate);
         }  catch (SAMLException se) {
