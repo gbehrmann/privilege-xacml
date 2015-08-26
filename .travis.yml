@@ -12,5 +12,5 @@ before_install:
   - mvn install:install-file -B -DgroupId=emi -DartifactId=emi-trustmanager-axis -Dversion=1.0.1 -Dpackaging=jar -Dfile=trustmanager-axis.jar
 
 
-install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+install: mvn install dependency:tree -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
