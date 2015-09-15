@@ -6,15 +6,11 @@ import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSManager;
-//GlobusCredential and X509Credential added to use this with jglobus and not with the old cog-jglobus 1.8
-import org.globus.gsi.GlobusCredential;
 import org.globus.gsi.X509Credential;
 import org.globus.gsi.CredentialException;
-import org.globus.gsi.GlobusCredentialException;
 import org.globus.gsi.TrustedCertificates;
 import org.globus.gsi.GSIConstants;
 import org.globus.gsi.bc.BouncyCastleUtil;
-import org.globus.gsi.bc.X509NameHelper;
 import org.globus.gsi.gssapi.GlobusGSSCredentialImpl;
 import org.globus.gsi.gssapi.GSSConstants;
 import org.globus.gsi.gssapi.auth.NoAuthorization;
@@ -23,11 +19,6 @@ import org.globus.gsi.gssapi.net.GssSocket;
 import org.gridforum.jgss.ExtendedGSSManager;
 import org.gridforum.jgss.ExtendedGSSContext;
 import org.bouncycastle.asn1.x509.TBSCertificateStructure;
-import org.bouncycastle.asn1.x509.X509Name;
-import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.ASN1Set;
-import org.bouncycastle.asn1.DERObjectIdentifier;
-import org.bouncycastle.asn1.DERString;
 import org.glite.voms.*;
 import org.glite.voms.ac.AttributeCertificate;
 import org.glite.voms.ac.VOMSTrustStore;
@@ -85,17 +76,6 @@ public class X509CertUtil {
 	    throw new GSSException(GSSException.DEFECTIVE_CREDENTIAL,0,"Could not read cert or key " + ioe.getMessage() + "\n" + ioe.getCause());
 	}
 	 
-	//Code changed to update from old cog-jglobus to jglobus 2.0 which doesn't have userCredential but X509 Credential
-	// and it can throw an IOExceptions
-	/*
-        GlobusCredential userCredential;
-        try {
-            userCredential =new GlobusCredential(proxy_cert, proxy_cert);
-        } catch(GlobusCredentialException gce) {
-            throw new GSSException(GSSException.NO_CRED , 0,
-                    "could not load host globus credentials "+gce.toString());
-        }
-	*/
         GSSCredential cred = new GlobusGSSCredentialImpl(
                 userCredential,
                 GSSCredential.INITIATE_AND_ACCEPT);
@@ -161,124 +141,11 @@ public class X509CertUtil {
     }
 
     public static String getSubjectFromX509Chain(X509Certificate[] chain, boolean omitEmail) throws Exception {
-        String subjectDN;
-
-        TBSCertificateStructure tbsCert = getUserTBSCertFromX509Chain(chain);
-        //subjectDN = clientcert.getSubjectX500Principal().toString();
-        //subjectDN = clientcert.getSubjectDN().toString();
-        //subjectDN = X509NameHelper.toString((X509Name)clientcert.getSubjectDN());
-        //subjectDN = toGlobusDN(subjectDN);
-        subjectDN = X509NameHelper.toString(tbsCert.getSubject());
-
-
-        //ASN1Sequence seq = (ASN1Sequence)BouncyCastleUtil.duplicate(tbsCert.getSubject().getDERObject());
-        subjectDN = toGlobusString((ASN1Sequence)tbsCert.getSubject().getDERObject(), omitEmail);
-
-        // Find End-Entity Certificate, e.g. user certificate
-
-        //byte[] encoded = chain[clientcertindex].getEncoded();
-        //X509Cert cert = new X509Cert(encoded);
-        //TBSCertificateStructure issuerTbsCert  = BouncyCastleUtil.getTBSCertificateStructure(chain[clientcertindex]);
-        //X509Certificate	testcert = chain[1];
-        //TBSCertificateStructure tbsCert  = BouncyCastleUtil.getTBSCertificateStructure(testcert);
-        //int certType = BouncyCastleUtil.getCertificateType(tbsCert, trustedCerts);
-        //BouncyCastleUtil.getIdentity(this.identityCert);
-
-        //if (org.globus.gsi.X509CertUtil.isImpersonationProxy(certType)) {
-        // throw exception
-        //}
-        //String identity = X509NameHelper.toString((X509Name)chain[clientcertindex].getSubjectDN());
-        //String identity = BouncyCastleUtil.getIdentity(chain[clientcertindex]);
-
-        //GlobusGSSContextImpl.GSSProxyPathValidator validator = new GSSProxyPathValidator();
-        //ProxyPathValidator validator = new ProxyPathValidator();
-
-        //try {
-        //  validator.validate(chain, null, null);
-        //} catch (Exception e) {throw e;}
-        //subjectDN = new GlobusGSSName(identity).toString();
-        //subjectDN = validator.getIdentity();
-
-        //Vector userCerts = PureTLSUtil.certificateChainToVector(chain);
-    /*
-    X509Cert cert = new X509Cert(clientcert.getEncoded());
-                ByteArrayInputStream in = new ByteArrayInputStream(cert.getDER());
-                X509Certificate clientX509cert = org.globus.gsi.X509CertUtil.loadCertificate(in);
-    subjectDN = BouncyCastleUtil.getIdentity(clientX509cert);
-     */
-
-    /*
-    if( subjectDN.startsWith("CN=") ||
-        subjectDN.startsWith("E=")  ||
-        subjectDN.substring(0,6).toLowerCase().startsWith("email="))
-      subjectDN = toGlobusDN(subjectDN);
-    else
-      subjectDN = "/" + subjectDN.replace(',', '/');
-     */
-
-    /*Matcher m1 = pattern1.matcher(subjectDN);
-    subjectDN = m1.replaceAll("");
-    //Matcher m2 = pattern2.matcher(subjectDN);
-    //subjectDN = m2.replaceAll("");
-    Matcher m3 = pattern3.matcher(subjectDN);
-    subjectDN = m3.replaceAll("");
-     */
-
-        return subjectDN;
-    }
-
-    public static TBSCertificateStructure getUserTBSCertFromX509Chain(X509Certificate[] chain) throws Exception {
-        TBSCertificateStructure tbsCert=null;
-        X509Certificate	clientcert=null;
-        //int clientcertindex = X509CertUtil.findClientCert(chain);
-        for (int i=0; i<chain.length; i++) {
-            X509Certificate	testcert = chain[i];
-    //DERObject obj = BouncyCastleUtil.toDERObject(testcert.getTBSCertificate());
-	//tbsCert  =  TBSCertificateStructure.getInstance(obj);
-            //tbsCert  = BouncyCastleUtil.getTBSCertificateStructure(testcert);
-	    //TrustedCertificates trustedCerts = null;
-	    /* Change from cog-jglobus to jglobus 2.0 use getCertificate passing it the X509Certificate 
-	       and the getCertificateType is no longer an integer.
-	    */
-            int certType = BouncyCastleUtil.getCertificateType(testcert).getCode();
-            if (!org.globus.gsi.CertUtil.isImpersonationProxy(certType)) {
-                clientcert = chain[i];
-                break;
-            }
-        }
-
-        if(clientcert == null) {
-            throw new Exception("could not find clientcert");
-        }
-
-        return tbsCert;
+        return BouncyCastleUtil.getIdentity(chain);
     }
 
     public static X509Certificate getUserCertFromX509Chain(X509Certificate[] chain) throws Exception {
-        TBSCertificateStructure tbsCert=null;
-        X509Certificate	clientcert=null;
-        //int clientcertindex = X509CertUtil.findClientCert(chain);
-        for (int i=0; i<chain.length; i++) {
-            X509Certificate	testcert = chain[i];
-    //DERObject obj = BouncyCastleUtil.toDERObject(testcert.getTBSCertificate());
-	//tbsCert  =  TBSCertificateStructure.getInstance(obj);
-            tbsCert  = BouncyCastleUtil.getTBSCertificateStructure(testcert);
-            //int certType = BouncyCastleUtil.getCertificateType(tbsCert);
-	    /* Change from cog-jglobus to jglobus 2.0 use getCertificate passing it the X509Certificate 
-	       and the getCertificateType is no longer an integer.
-	    */
-            int certType = BouncyCastleUtil.getCertificateType(testcert).getCode();
-            if (!org.globus.gsi.CertUtil.isImpersonationProxy(certType)) {
-                clientcert = chain[i];
-                break;
-            }
-        }
-
-        if(clientcert == null) {
-            throw new Exception("could not find clientcert");
-        }
-
-        return clientcert;
+        return BouncyCastleUtil.getIdentityCertificate(chain);
     }
 
     public static Date getLatestNotBefore(X509Certificate[] chain) throws Exception {
@@ -493,41 +360,6 @@ attribute : /cms/uscms/Role=cmsprod/Capability=NULL
             }
         }
         return group;
-    }
-
-    public static String toGlobusString(ASN1Sequence seq, boolean omitEmail) {
-	  if (seq == null) {
-	    return null;
-	  }
-
-	  Enumeration e = seq.getObjects();
-	  StringBuffer buf = new StringBuffer();
-        while (e.hasMoreElements()) {
-            ASN1Set set = (ASN1Set)e.nextElement();
-	    Enumeration ee = set.getObjects();
-	    boolean didappend = false;
-	    while (ee.hasMoreElements()) {
-		ASN1Sequence s = (ASN1Sequence)ee.nextElement();
-		DERObjectIdentifier oid = (DERObjectIdentifier)s.getObjectAt(0);
-		String sym = (String) X509Name.OIDLookUp.get(oid);
-        if (oid.equals(X509Name.EmailAddress) && omitEmail) {
-            continue;
-        }
-        if(!didappend) { buf.append('/'); didappend = true; }
-        if (sym == null) {
-		    buf.append(oid.getId());
-		} else {
-		    buf.append(sym);
-		}
-		buf.append('=');
-		buf.append( ((DERString)s.getObjectAt(1)).getString());
-		if (ee.hasMoreElements()) {
-		    buf.append('+');
-		}
-	    }
-	  }
-
-	  return buf.toString();
     }
 
     public static synchronized VOMSValidator getVOMSValidatorInstance() throws IOException, CertificateException, CRLException {
