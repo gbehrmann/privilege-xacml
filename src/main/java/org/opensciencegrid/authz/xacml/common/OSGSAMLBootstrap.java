@@ -80,6 +80,8 @@ public class OSGSAMLBootstrap extends DefaultBootstrap {
         initializeArtifactBuilderFactories();
 
         initializeGlobalSecurityConfiguration();
+
+        initializeParserPool();
     }
 
 }
