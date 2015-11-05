@@ -1,13 +1,11 @@
 package org.opensciencegrid.authz.xacml.client;
 
+import eu.emi.security.authn.x509.impl.PEMCredential;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.glite.voms.VOMSAttribute;
-import org.globus.gsi.GlobusCredential;
-import org.globus.gsi.gssapi.GSSConstants;
-import org.gridforum.jgss.ExtendedGSSContext;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSException;
+import org.italiangrid.voms.VOMSAttribute;
 import org.opensciencegrid.authz.xacml.common.LocalId;
 import org.opensciencegrid.authz.xacml.common.X509CertUtil;
 import org.opensciencegrid.authz.xacml.common.XACMLConstants;
@@ -22,9 +20,9 @@ public class XACMLX509Test {
 
     public static void main(String[] args) {
 
-        GlobusCredential cred = null;
+        PEMCredential cred = null;
         try {
-            cred = new GlobusCredential(getProxyFile());
+            cred = new PEMCredential(getProxyFile(), (char[]) null);
             System.setProperty("X509_PROXY_FILE", getProxyFile());
         } catch (Exception e) {
             logger.error("Caught exception in context creation. " + e.getMessage());
@@ -111,7 +109,7 @@ public class XACMLX509Test {
         }
         if (vomsAttr!=null) {
             VO = vomsAttr.getVO();
-            String X500IssuerName = vomsAttr.getAC().getIssuer().toString();
+            String X500IssuerName = vomsAttr.getIssuer().toString();
             VOMSSigningSubject = X509CertUtil.toGlobusDN(X500IssuerName);
         }
 
