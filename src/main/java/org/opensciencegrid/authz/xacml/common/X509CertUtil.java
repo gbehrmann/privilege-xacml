@@ -70,10 +70,9 @@ public class X509CertUtil {
 
     public static Date getLatestNotBefore(X509Certificate[] chain) throws Exception {
         Date not_before=null;
-        for (int i=0; i<chain.length; i++) {
-            X509Certificate	testcert = chain[i];
+        for (X509Certificate testcert : chain) {
             Date test_not_before = testcert.getNotBefore();
-            if (not_before==null || test_not_before.after(not_before) ) {
+            if (not_before == null || test_not_before.after(not_before)) {
                 not_before = test_not_before;
             }
 
@@ -92,10 +91,9 @@ public class X509CertUtil {
 
     public static Date getEarliestNotAfter(X509Certificate[] chain) throws Exception {
         Date not_after=null;
-        for (int i=0; i<chain.length; i++) {
-            X509Certificate	testcert = chain[i];
+        for (X509Certificate testcert : chain) {
             Date test_not_after = testcert.getNotAfter();
-            if (not_after==null || test_not_after.before(not_after) ) {
+            if (not_after == null || test_not_after.before(not_after)) {
                 not_after = test_not_after;
             }
 
@@ -124,7 +122,7 @@ public class X509CertUtil {
     public static Collection <String> getFQANsFromX509Chain(X509Certificate[] chain, boolean validate) throws Exception {
         Collection <String> fqans=null;
         try {
-            List listOfAttributes = getVOMSAttributes(chain, validate);
+            List<VOMSAttribute> listOfAttributes = getVOMSAttributes(chain, validate);
             fqans = getFQANSfromVOMSAttributes(listOfAttributes);
         } catch(Exception ae ) {
             throw new Exception(ae.toString());
@@ -146,27 +144,23 @@ attribute : /cms/uscms/Role=cmsprod/Capability=NULL
    /cms/uscms/Role=cmsprod/Capability=NULL
 */
 
-    public static LinkedHashSet<String> getFQANSfromVOMSAttributes(List listOfAttributes) {
+    public static LinkedHashSet<String> getFQANSfromVOMSAttributes(List<VOMSAttribute> listOfAttributes) {
         LinkedHashSet<String> fqans = new LinkedHashSet <String> ();
 
-        Iterator i = listOfAttributes.iterator();
-        while (i.hasNext()) {
-            VOMSAttribute vomsAttribute = (VOMSAttribute) i.next();
-            List<String> listOfFqans = vomsAttribute.getFQANs();
-            Iterator<String> j = listOfFqans.iterator();
-            while (j.hasNext()) {
-                String attr = j.next();
-                if(attr.endsWith(capnull))
-                attr = attr.substring(0, attr.length() - capnulllen);
-                if(attr.endsWith(rolenull))
-                attr = attr.substring(0, attr.length() - rolenulllen);
-                Iterator k = fqans.iterator();
-                boolean issubrole=false;
-                while (k.hasNext()) {
-                  String fqanattr=(String) k.next();
-                  if (fqanattr.startsWith(attr)) {issubrole=true; break;}
+        for (VOMSAttribute vomsAttribute : listOfAttributes) {
+            for (String attr : vomsAttribute.getFQANs()) {
+                if (attr.endsWith(capnull))
+                    attr = attr.substring(0, attr.length() - capnulllen);
+                if (attr.endsWith(rolenull))
+                    attr = attr.substring(0, attr.length() - rolenulllen);
+                boolean issubrole = false;
+                for (String fqanattr : fqans) {
+                    if (fqanattr.startsWith(attr)) {
+                        issubrole = true;
+                        break;
+                    }
                 }
-                if(!issubrole) fqans.add(attr);
+                if (!issubrole) fqans.add(attr);
             }
         }
 
@@ -180,27 +174,16 @@ attribute : /cms/uscms/Role=cmsprod/Capability=NULL
         if(fqan.endsWith(rolenull))
                 fqan = fqan.substring(0, fqan.length() - rolenulllen);
 
-        List listOfAttributes = getVOMSAttributes(chain, false);
+        List<VOMSAttribute> listOfAttributes = getVOMSAttributes(chain, false);
 
-        Iterator i = listOfAttributes.iterator();
-        while (i.hasNext()) {
-            VOMSAttribute vomsAttribute = (VOMSAttribute) i.next();
+        for (VOMSAttribute vomsAttribute : listOfAttributes) {
             List<String> listOfFqans = vomsAttribute.getFQANs();
-            Iterator<String> j = listOfFqans.iterator();
-            while (j.hasNext()) {
-                String attr = j.next();
-                String attrtmp=attr;
-                if(attrtmp.endsWith(capnull))
-                    attrtmp = attrtmp.substring(0, attrtmp.length() - capnulllen);
-                if(attrtmp.endsWith(rolenull))
-                    attrtmp = attrtmp.substring(0, attrtmp.length() - rolenulllen);
-                //Iterator k = fqans.iterator();
-                //boolean issubrole=false;
-                //while (k.hasNext()) {
-                  //String fqanattr=(String) k.next();
-                  //if (fqanattr.startsWith(attrtmp)) {issubrole=true; break;}
-                //}
-                if(attrtmp.equals(fqan)) return vomsAttribute;
+            for (String attr : listOfFqans) {
+                if (attr.endsWith(capnull))
+                    attr = attr.substring(0, attr.length() - capnulllen);
+                if (attr.endsWith(rolenull))
+                    attr = attr.substring(0, attr.length() - rolenulllen);
+                if (attr.equals(fqan)) return vomsAttribute;
             }
         }
 
