@@ -1,6 +1,6 @@
 # Privilege XACML
 
-![](https://api.travis-ci.org/opensciencegrid/privilege-xacml.svg?branch=master)
+[![](https://api.travis-ci.org/opensciencegrid/privilege-xacml.svg?branch=master)](https://travis-ci.org/opensciencegrid/privilege-xacml)
 
 Java helper libraries for the grid interoperability XACML profile.
 
