@@ -2,7 +2,24 @@ package org.opensciencegrid.authz.xacml.client;
 
 import static org.opensciencegrid.authz.xacml.common.XACMLConstants.SUBJECT_VOMS_SIGNING_SUBJECT_ID;
 
+import eu.emi.security.authn.x509.impl.CertificateUtils;
+import eu.emi.security.authn.x509.impl.FormatMode;
+import eu.emi.security.authn.x509.impl.HostnameMismatchCallback;
+import eu.emi.security.authn.x509.impl.SocketFactoryCreator;
+import org.apache.axis.AxisProperties;
+import org.apache.axis.EngineConfiguration;
+import org.apache.axis.MessageContext;
+import org.apache.axis.SimpleTargetedChain;
+import org.apache.axis.components.net.BooleanHolder;
+import org.apache.axis.components.net.DefaultSocketFactory;
+import org.apache.axis.components.net.JSSESocketFactory;
+import org.apache.axis.components.net.SecureSocketFactory;
+import org.apache.axis.components.net.SocketFactoryFactory;
+import org.apache.axis.configuration.SimpleProvider;
 import org.apache.axis.message.MessageElement;
+import org.apache.axis.transport.http.HTTPSender;
+import org.apache.axis.transport.http.SocketHolder;
+import org.apache.axis.utils.Messages;
 import org.opensaml.xml.XMLObjectBuilderFactory;
 import org.opensaml.xml.XMLObjectBuilder;
 import org.opensaml.xml.util.XMLConstants;
@@ -61,9 +78,13 @@ import org.apache.axis.types.Id;
 import org.apache.axis.types.NCName;
 import org.apache.axis.message.PrefixedQName;
 import org.apache.axis.utils.XMLUtils;
+
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocket;
 import javax.xml.namespace.QName;
 import javax.xml.soap.Name;
 
+import org.opensciencegrid.authz.xacml.common.X509CertUtil;
 import org.opensciencegrid.authz.xacml.common.XACMLConstants;
 import org.opensciencegrid.authz.xacml.common.OSGSAMLBootstrap;
 import org.opensciencegrid.authz.xacml.common.FQAN;
@@ -71,13 +92,16 @@ import org.opensciencegrid.authz.xacml.stubs.*;
 
 import org.w3c.dom.*;
 
-//import org.globus.gsi.gssapi.auth.NoAuthorization;
-
 import javax.xml.rpc.ServiceException;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.net.URL;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.rmi.RemoteException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 
@@ -107,6 +131,50 @@ public class XACMLClient {
     protected String RSL_string;
 
     static XMLObjectBuilderFactory builderFactory;
+    private EngineConfiguration axisConfiguration;
+
+    /**
+     * Default socket factory that locates credentials and trust information through system properties.
+     */
+    public static class SocketFactory extends JSSESocketFactory implements HostnameMismatchCallback
+    {
+        public SocketFactory(Hashtable attributes)
+        {
+            super(attributes);
+        }
+
+        @Override
+        protected void initFactory() throws IOException
+        {
+            try {
+                sslFactory = SocketFactoryCreator.getSocketFactory(X509CertUtil.getHostCredential(), X509CertUtil.getCertChainValidator());
+            } catch (CertificateException e) {
+                throw new IOException(e.getMessage(), e);
+            } catch (KeyStoreException e) {
+                throw new IOException(e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public Socket create(String host, int port, StringBuffer otherHeaders,
+                             BooleanHolder useFullURL) throws Exception
+        {
+            Socket socket = super.create(host, port, otherHeaders, useFullURL);
+            SocketFactoryCreator.connectWithHostnameChecking((SSLSocket) socket, this);
+            return socket;
+        }
+
+        @Override
+        public void nameMismatch(SSLSocket socket, X509Certificate peerCertificate, String hostName) throws SSLException
+        {
+            String peerCertString = CertificateUtils.format(peerCertificate, FormatMode.MEDIUM_ONE_LINE);
+            String message = String.format(
+                    "No subject alternative DNS name matching %s found. Peer certificate : %s",
+                    hostName, peerCertString);
+            throw new SSLException(message);
+
+        }
+    }
 
     static {
 
@@ -120,7 +188,8 @@ public class XACMLClient {
         }
         builderFactory = Configuration.getBuilderFactory();
 
-        System.setProperty("axis.socketSecureFactory","org.glite.security.trustmanager.axis.AXISSocketFactory");
+        SocketFactoryFactory.getFactory("foo", null); // Triggers the registration of default socket factories
+        AxisProperties.setClassDefault(SecureSocketFactory.class, "org.opensciencegrid.authz.xacml.client.XACMLClient$SocketFactory");
     }
 
     Response authorize (String authzServiceUrlStr) throws RemoteException {
@@ -131,7 +200,7 @@ public class XACMLClient {
         ActionType action = getActionType(issuer);
         EnvironmentType env = getEnvironmentType();
 
-        return authorize(authzServiceUrlStr);
+        return authorize(subject, resource, action, env, authzServiceUrlStr);
     }
 
     Response authorize (SubjectType subject, ResourceType resource, ActionType action, EnvironmentType env, String authzServiceUrlStr) throws RemoteException {
@@ -162,7 +231,7 @@ public class XACMLClient {
 
         logger.debug("Invoke query on authz service " + authzServiceUrlStr);
         // Invoke remote methods
-        XACMLAuthorizationServiceLocator locator = new XACMLAuthorizationServiceLocator();
+        XACMLAuthorizationServiceLocator locator = new XACMLAuthorizationServiceLocator(axisConfiguration);
         XACMLAuthorizationPortType xacmlPort;
         try {
             xacmlPort = locator.getXACMLAuthorizationPortTypePort(authzServiceUrl);
@@ -1131,4 +1200,8 @@ public class XACMLClient {
         this.RSL_string = RSL_string;
     }
 
+    public void setAxisConfiguration(EngineConfiguration axisConfiguration)
+    {
+        this.axisConfiguration = axisConfiguration;
+    }
 }
